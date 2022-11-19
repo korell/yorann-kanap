@@ -27,7 +27,7 @@ async function getProduct(productId) {
 function setProductData(productData) {
     productData.colors.forEach(color => {
         const option = document.createElement('option')
-        option.innerText = color
+        option.textContent = color
         option.value = color
         colorsSelectDOM.append(option)
     })

@@ -3,6 +3,8 @@ import {API_URL} from "./data.js";
 const itemsDOM = document.querySelector('#cart__items')
 const totalPriceDOM = document.querySelector('#totalPrice')
 const totalQuantityDOM = document.querySelector('#totalQuantity')
+const form = document.querySelector('form')
+const formSubmitBtn = form.querySelector('#order')
 
 let cartFullProducts
 let apiProductsData
@@ -37,6 +39,8 @@ if(cart) {
 } else {
     itemsDOM.innerHTML = '<div>Panier vide</div>'
 }
+
+form.addEventListener('submit', onSubmitForm)
 
 async function getProductsDataFromApi(cart) {
     const productsCartIds = cart.map(cart => cart.productId)
@@ -114,7 +118,7 @@ function setTotalPrice() {
     const total = cartFullProducts.reduce((acc, product) => {
         return acc + product.quantity * product.price
     }, 0)
-    totalPriceDOM.innerText = total.toLocaleString(
+    totalPriceDOM.textContent = total.toLocaleString(
         undefined, {
             minimumFractionDigits: 2
         })
@@ -123,7 +127,7 @@ function setTotalQuantity() {
     const total = cartFullProducts.reduce((acc, product) => {
         return acc + parseInt(product.quantity)
     }, 0)
-    totalQuantityDOM.innerText = total
+    totalQuantityDOM.textContent = total
 }
 
 function onChangeItemQuantity(ev) {
@@ -162,4 +166,31 @@ function onClickDeleteButton(ev) {
     setCartToLocalStorage(cart)
     setTotalPrice()
     setTotalQuantity()
+}
+
+function onSubmitForm(ev) {
+    ev.preventDefault()
+    const contact = Object.fromEntries(new FormData(form))
+    fetch(API_URL + '/order', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            contact: contact,
+            products: cartFullProducts.map(product => product._id)
+        })
+    }).then(response => {
+        if(response.ok) {
+            response.json().then(result => {
+                location.href = './confirmation.html?orderId=' + result.orderId
+            })
+        } else {
+            response.json().then(json => {
+                console.log('json error', json);
+            })
+        }
+    }).catch(error => {
+        console.log('error', error);
+    })
 }
