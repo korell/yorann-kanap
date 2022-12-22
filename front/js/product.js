@@ -8,6 +8,7 @@ const colorsSelectDOM = document.querySelector('#colors')
 const descriptionDOM = document.querySelector('#description')
 const priceDOM = document.querySelector('#price')
 const quantityDOM = document.querySelector('#quantity')
+const imageContainerDOM = document.querySelector('.item__img')
 const addToCartButton = document.querySelector('#addToCart')
 
 /**
@@ -21,17 +22,17 @@ async function getProduct(productId) {
 }
 
 /**
- * Mise à jour des données produits dans le DOM
+ * Mise à jour des données produit dans le DOM
  * @param productData
  */
-function setProductData(productData) {
+function setProductDOMData(productData) {
     productData.colors.forEach(color => {
-        const option = document.createElement('option')
-        option.textContent = color
-        option.value = color
-        colorsSelectDOM.append(option)
+        colorsSelectDOM.append(new Option(color, color))
     })
-
+    const img = new Image()
+    img.src = productData.imageUrl
+    img.alt = productData.altTxt
+    imageContainerDOM.append(img)
     descriptionDOM.innerHTML = productData.description
     priceDOM.innerHTML = productData.price
     document.title = productData.name
@@ -55,6 +56,24 @@ function onClickAddToCartButton() {
 
     if(itemToCart.color && itemToCart.quantity) {
         setItemToCart(itemToCart)
+
+        const addMessage = document.createElement('div')
+        addMessage.textContent = `${itemToCart.quantity} ${product.name} ajouté !`
+
+        addMessage.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: black;
+            color: white;
+        `
+        document.body.append(addMessage)
+        
+        // suppression du message après 2s (2000ms)
+        setTimeout(() => {
+            addMessage.remove()
+        }, 2000)
     }
 }
 
@@ -80,7 +99,7 @@ function setItemToCart(item) {
 
 getProduct(productId).then(productData => {
     product = productData
-    setProductData(productData)
+    setProductDOMData(productData)
 })
 
 addToCartButton.addEventListener('click', onClickAddToCartButton)
