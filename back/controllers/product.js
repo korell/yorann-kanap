@@ -5,7 +5,13 @@ exports.getAllProducts = (req, res, next) => {
   Product.find().then(
     (products) => {
       const mappedProducts = products.map((product) => {
-        product.imageUrl = req.protocol + '://' + req.get('host') + '/images/' + product.imageUrl;
+      const filename = product.imageUrl
+      product.imageUrl = req.protocol + '://' + req.get('host') + '/images/' + filename;
+      product.imagesUrls = {
+          large: req.protocol + '://' + req.get('host') + '/images/' + filename,
+          medium: req.protocol + '://' + req.get('host') + '/images/1400w/' + filename,
+          small: req.protocol + '://' + req.get('host') + '/images/320w/' + filename,
+      };
         return product;
       });
       res.status(200).json(mappedProducts);
@@ -23,8 +29,14 @@ exports.getOneProduct = (req, res, next) => {
       if (!product) {
         return res.status(404).send(new Error('Product not found!'));
       }
-      product.imageUrl = req.protocol + '://' + req.get('host') + '/images/' + product.imageUrl;
-      res.status(200).json(product);
+      const filename = product.imageUrl
+      product.imageUrl = req.protocol + '://' + req.get('host') + '/images/' + filename;
+        product.imagesUrls = {
+            large: req.protocol + '://' + req.get('host') + '/images/' + filename,
+            medium: req.protocol + '://' + req.get('host') + '/images/1400w/' + filename,
+            small: req.protocol + '://' + req.get('host') + '/images/320w/' + filename,
+        };
+        res.status(200).json(product);
     }
   ).catch(
     () => {
