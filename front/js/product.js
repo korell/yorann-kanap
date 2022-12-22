@@ -11,6 +11,13 @@ const quantityDOM = document.querySelector('#quantity')
 const imageContainerDOM = document.querySelector('.item__img')
 const addToCartButton = document.querySelector('#addToCart')
 
+const productData = await getProduct(productId)
+// Variable globale
+product = productData
+setProductDOMData(productData)
+
+addToCartButton.addEventListener('click', onClickAddToCartButton)
+
 /**
  * Récupération des données produit depuis l'API
  * @param productId
@@ -30,7 +37,7 @@ function setProductDOMData(productData) {
         colorsSelectDOM.append(new Option(color, color))
     })
     const img = new Image()
-    img.src = productData.imageUrl
+    img.src = productData.imagesUrls.medium
     img.alt = productData.altTxt
     imageContainerDOM.append(img)
     descriptionDOM.innerHTML = productData.description
@@ -96,12 +103,5 @@ function setItemToCart(item) {
     }
     localStorage.setItem('cart', JSON.stringify(cart))
 }
-
-getProduct(productId).then(productData => {
-    product = productData
-    setProductDOMData(productData)
-})
-
-addToCartButton.addEventListener('click', onClickAddToCartButton)
 
 

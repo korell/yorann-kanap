@@ -11,12 +11,17 @@ async function getProducts() {
     return await response.json()
 }
 
+/**
+ * On construit ici la partie HTML d'une carte produit
+ * @param productData
+ * @returns {HTMLAnchorElement} : l'élément lien cliquable
+ */
 function buildProductCard(productData) {
     const productElement = document.createElement('a')
     productElement.href = `./product.html?id=${productData._id}`
     productElement.innerHTML = `
         <article>
-            <img src="${productData.imageUrl}" alt="${productData.altTxt}">
+            <img src="${productData.imagesUrls.small}" alt="${productData.altTxt}">
             <h3 class="productName">${productData.name}</h3>
             <p class="productDescription">${productData.description}</p>
         </article>
@@ -24,6 +29,10 @@ function buildProductCard(productData) {
     return productElement
 }
 
+/**
+ * Insertion des cartes produits dans le container HTML
+ * @param products
+ */
 function insertProducts(products) {
     productsItemsContainer.innerHTML = ''
     products.forEach(product => {
@@ -32,7 +41,7 @@ function insertProducts(products) {
     })
 }
 
-getProducts().then(products => {
-    insertProducts(products)
-})
+// Éxécution du processus d'ajout des produits dans le DOM
+const products = await getProducts()
+insertProducts(products)
 
